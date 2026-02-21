@@ -3,9 +3,16 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+const normalizeBasePath = (basePath?: string) => {
+  if (!basePath) return "/";
+  const trimmed = basePath.trim();
+  if (!trimmed || trimmed === "/") return "/";
+  return `/${trimmed.replace(/^\/+|\/+$/g, "")}/`;
+};
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: '/tiendaTech/',
+  base: normalizeBasePath(process.env.VITE_BASE_PATH),
   server: {
     host: "localhost",
     port: 8080,

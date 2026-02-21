@@ -1,5 +1,29 @@
 # Welcome to your Lovable project
 
+## Deploy manual a hosting PHP/Apache (rápido)
+
+Este proyecto es una SPA estática. Puedes subirlo a un hosting normal con PHP sin problema.
+
+### 1) Elegir base path de build
+
+- Si publicas en raíz (`https://tudominio.com/`): `npm run build:root`
+- Si publicas en subcarpeta (`https://tudominio.com/tiendaTech/`): `npm run build:subdir`
+
+### 2) Compilar
+
+```sh
+npm ci
+npm run build:root
+```
+
+### 3) Subir al hosting
+
+Sube **todo el contenido de `dist/`** a `public_html/` (o a la subcarpeta correspondiente).
+
+Importante:
+- Mantén `dist/.htaccess` en el servidor para que rutas SPA como `/producto/...` no den 404.
+- No necesitas backend PHP para esta app; PHP solo convive con los archivos estáticos.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
