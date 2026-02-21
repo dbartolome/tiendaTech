@@ -1,25 +1,45 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>DiegoTech – Electrónica Premium</title>
-    <meta name="description" content="Tienda de electrónica premium con los mejores gadgets y tecnología de vanguardia" />
-    <meta name="author" content="DiegoTech" />
-
-    <meta property="og:title" content="DiegoTech – Electrónica Premium" />
-    <meta property="og:description" content="Tienda de electrónica premium con los mejores gadgets y tecnología de vanguardia" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <title>DiegoTech</title>
+    <meta name="description" content="Tienda de tecnología DiegoTech" />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
-
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <header class="navbar" id="top">
+      <div class="container nav-inner">
+        <a class="brand" href="#/">
+          <span class="brand-icon">⚡</span>
+          <span>Diego<span class="text-gradient">Tech</span></span>
+        </a>
+        <nav class="nav-links">
+          <a href="#inicio">Inicio</a>
+          <a href="#productos">Productos</a>
+          <a href="#categorias">Categorías</a>
+        </nav>
+        <button class="cart-btn" aria-label="Carrito">🛒 <span>3</span></button>
+      </div>
+    </header>
+
+    <main id="app"></main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <a class="brand" href="#/">
+          <span class="brand-icon">⚡</span>
+          <span>Diego<span class="text-gradient">Tech</span></span>
+        </a>
+        <p>© 2026 DiegoTech. Todos los derechos reservados.</p>
+        <div class="footer-links">
+          <a href="#/">Privacidad</a>
+          <a href="#/">Términos</a>
+          <a href="#/">Contacto</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
   </body>
 </html>
