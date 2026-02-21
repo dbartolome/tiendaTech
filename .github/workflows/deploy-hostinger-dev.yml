@@ -1,30 +1,34 @@
-name: Deploy
+name: Deploy to Hostinger (FTP)
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      
+
       - run: npm ci
-      
-      - run: npm run build
-      
-      - uses: actions/upload-pages-artifact@v3
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_BASE_PATH: ${{ secrets.VITE_BASE_PATH }}
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          path: dist/
-      
-      - uses: actions/deploy-pages@v4
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT || 21 }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR || '/public_html/' }}
+          local-dir: ./dist/

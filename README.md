@@ -24,6 +24,19 @@ Importante:
 - Mantén `dist/.htaccess` en el servidor para que rutas SPA como `/producto/...` no den 404.
 - No necesitas backend PHP para esta app; PHP solo convive con los archivos estáticos.
 
+## Deploy automático a Hostinger (FTP)
+
+El repo está configurado para desplegar automáticamente al hacer push a `main` con:
+- Workflow: `.github/workflows/deploy-hostinger-dev.yml`
+
+Configura estos secrets en GitHub Actions:
+- `FTP_SERVER`
+- `FTP_USERNAME`
+- `FTP_PASSWORD`
+- `FTP_PORT` (opcional, por defecto `21`)
+- `FTP_SERVER_DIR` (opcional, por defecto `/public_html/`)
+- `VITE_BASE_PATH` (opcional, usa `/` para raíz o `/subcarpeta/`)
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
