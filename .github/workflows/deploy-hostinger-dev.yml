@@ -1,0 +1,47 @@
+name: Deploy to Hostinger (Development FTP)
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+concurrency:
+  group: development-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Quality checks
+        run: npm run lint && npm run test
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_BASE_PATH: ${{ secrets.DEV_VITE_BASE_PATH }}
+
+      - name: Upload dist via FTP (development)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.DEV_FTP_SERVER }}
+          username: ${{ secrets.DEV_FTP_USERNAME }}
+          password: ${{ secrets.DEV_FTP_PASSWORD }}
+          port: ${{ secrets.DEV_FTP_PORT || 21 }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.DEV_FTP_SERVER_DIR || '/public_html/desarrollo/' }}
+          dangerous-clean-slate: false
