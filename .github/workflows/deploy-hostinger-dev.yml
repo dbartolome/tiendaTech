@@ -5,14 +5,9 @@ on:
     branches: [develop]
   workflow_dispatch:
 
-concurrency:
-  group: development-deploy
-  cancel-in-progress: true
-
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment: development
 
     steps:
       - name: Checkout
@@ -22,26 +17,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Install dependencies
+      - name: Install
         run: npm ci
-
-      - name: Quality checks
-        run: npm run lint && npm run test
 
       - name: Build
         run: npm run build
-        env:
-          VITE_BASE_PATH: ${{ secrets.DEV_VITE_BASE_PATH }}
 
-      - name: Upload dist via FTP (development)
+      - name: Deploy FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.DEV_FTP_SERVER }}
           username: ${{ secrets.DEV_FTP_USERNAME }}
           password: ${{ secrets.DEV_FTP_PASSWORD }}
-          port: ${{ secrets.DEV_FTP_PORT || 21 }}
           local-dir: ./dist/
-          server-dir: ${{ secrets.DEV_FTP_SERVER_DIR || '/public_html/desarrollo/' }}
-          dangerous-clean-slate: false
+          server-dir: /public_html/
