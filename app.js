@@ -17,6 +17,7 @@ const cartOverlay = document.getElementById("cartOverlay");
 const cartItemsNode = document.getElementById("cartItems");
 const cartTotalNode = document.getElementById("cartTotal");
 const clearCartBtn = document.getElementById("clearCart");
+const goCheckoutBtn = document.getElementById("goCheckout");
 const cartCloseBtn = document.getElementById("cartClose");
 const cartCountNode = document.querySelector(".cart-count");
 const CART_KEY = "diegotech_cart_v1";
@@ -122,11 +123,104 @@ function detailView(id) {
   `;
 }
 
+function checkoutView(confirmed = false) {
+  if (confirmed) {
+    app.innerHTML = `
+      <section class="checkout">
+        <div class="container">
+          <div class="checkout-success glass">
+            <h1>Pedido confirmado</h1>
+            <p>Tu compra ficticia se ha registrado correctamente.</p>
+            <a class="btn btn-primary" href="#/">Volver a la tienda</a>
+          </div>
+        </div>
+      </section>
+    `;
+    return;
+  }
+
+  if (!cart.length) {
+    app.innerHTML = `
+      <section class="checkout">
+        <div class="container">
+          <div class="checkout-empty glass">
+            <h1>No hay productos para comprar</h1>
+            <p>Tu carrito está vacío. Añade productos antes de continuar.</p>
+            <a class="btn btn-primary" href="#/">Ir a productos</a>
+          </div>
+        </div>
+      </section>
+    `;
+    return;
+  }
+
+  app.innerHTML = `
+    <section class="checkout">
+      <div class="container">
+        <a class="back" href="#/">← Volver a la tienda</a>
+        <div class="checkout-grid">
+          <article class="checkout-summary glass">
+            <h2>Resumen de compra</h2>
+            <div class="checkout-list">
+              ${cart.map((item) => `
+                <div class="checkout-item">
+                  <div>
+                    <p><strong>${item.name}</strong></p>
+                    <p class="muted">${item.qty} x ${formatPrice(item.amount)}</p>
+                  </div>
+                  <p>${formatPrice(item.qty * item.amount)}</p>
+                </div>
+              `).join("")}
+            </div>
+            <div class="checkout-total">
+              <span>Total</span>
+              <strong class="text-gradient">${formatPrice(getCartTotal())}</strong>
+            </div>
+          </article>
+
+          <article class="checkout-form glass">
+            <h2>Datos de envío</h2>
+            <form id="checkoutForm" novalidate>
+              <label>
+                Nombre completo
+                <input name="fullName" type="text" required />
+              </label>
+              <label>
+                Email
+                <input name="email" type="email" required />
+              </label>
+              <label>
+                Dirección
+                <input name="address" type="text" required />
+              </label>
+              <label>
+                Ciudad
+                <input name="city" type="text" required />
+              </label>
+              <label>
+                Código postal
+                <input name="zip" type="text" required />
+              </label>
+              <p class="form-error" id="checkoutError" hidden>Completa todos los campos obligatorios para confirmar.</p>
+              <button class="btn btn-primary" type="submit">Confirmar pedido</button>
+            </form>
+          </article>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function router() {
   const hash = window.location.hash || "#/";
   const productMatch = hash.match(/^#\/producto\/(.+)$/);
+  const checkoutMatch = hash.match(/^#\/checkout(?:\?(.+))?$/);
   closeMobileMenu();
   if (productMatch) return detailView(productMatch[1]);
+  if (checkoutMatch) {
+    const params = new URLSearchParams(checkoutMatch[1] || "");
+    return checkoutView(params.get("success") === "1");
+  }
   homeView();
 }
 
@@ -238,10 +332,38 @@ app.addEventListener("click", (event) => {
   if (removeBtn) removeFromCart(removeBtn.dataset.productId);
 });
 
+app.addEventListener("submit", (event) => {
+  const form = event.target.closest("#checkoutForm");
+  if (!form) return;
+
+  event.preventDefault();
+  const formData = new FormData(form);
+  const requiredFields = ["fullName", "email", "address", "city", "zip"];
+  const hasMissingData = requiredFields.some((field) => !String(formData.get(field) || "").trim());
+  const errorNode = document.getElementById("checkoutError");
+
+  if (hasMissingData) {
+    if (errorNode) errorNode.hidden = false;
+    return;
+  }
+
+  cart = [];
+  persistCart();
+  renderCartItems();
+  closeCart();
+  window.location.hash = "#/checkout?success=1";
+});
+
 cartBtn.addEventListener("click", openCart);
 cartCloseBtn.addEventListener("click", closeCart);
 cartOverlay.addEventListener("click", closeCart);
 clearCartBtn.addEventListener("click", clearCart);
+if (goCheckoutBtn) {
+  goCheckoutBtn.addEventListener("click", () => {
+    closeCart();
+    window.location.hash = "#/checkout";
+  });
+}
 if (menuBtn && navLinks) {
   menuBtn.addEventListener("click", toggleMobileMenu);
   navLinks.addEventListener("click", (event) => {
