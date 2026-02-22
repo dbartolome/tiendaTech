@@ -4,8 +4,7 @@ Guía rápida para cualquier persona o agente que trabaje en este repositorio.
 
 ## Objetivo
 
-Mantener y mejorar la web de DiegoTech sin romper su funcionamiento actual.
-
+Mantener y mejorar la web de DiegoTech sin romper su funcionamiento actual. mejorado
 ## Reglas de trabajo
 
 - Priorizar cambios pequeños y fáciles de revisar.

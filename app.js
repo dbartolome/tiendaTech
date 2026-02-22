@@ -8,7 +8,22 @@ const products = [
 
 const categories = [["Audio", 42], ["Smartphones", 28], ["Wearables", 15], ["Periféricos", 36], ["Altavoces", 19], ["Gaming", 53]];
 const app = document.getElementById("app");
+const menuBtn = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+const cartBtn = document.getElementById("cartToggle");
+const cartDrawer = document.getElementById("cartDrawer");
+const cartOverlay = document.getElementById("cartOverlay");
+const cartItemsNode = document.getElementById("cartItems");
+const cartTotalNode = document.getElementById("cartTotal");
+const clearCartBtn = document.getElementById("clearCart");
+const cartCloseBtn = document.getElementById("cartClose");
+const cartCountNode = document.querySelector(".cart-count");
+const CART_KEY = "diegotech_cart_v1";
+let cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+
 const stars = (n) => "★".repeat(n) + "☆".repeat(5 - n);
+const toAmount = (price) => Number(String(price).replace(/[^\d.]/g, ""));
+const formatPrice = (amount) => `€${amount.toFixed(0)}`;
 
 function homeView() {
   app.innerHTML = `
@@ -53,7 +68,7 @@ function homeView() {
                 <a href="#/producto/${p.id}"><h3>${p.name}</h3></a>
                 <div class="price-row">
                   <span class="price text-gradient">${p.price}</span>
-                  <button class="icon-btn" type="button" aria-label="Añadir al carrito">🛒</button>
+                  <button class="icon-btn add-to-cart" data-product-id="${p.id}" type="button" aria-label="Añadir al carrito">🛒</button>
                 </div>
               </div>
             </article>
@@ -95,7 +110,7 @@ function detailView(id) {
             <p class="rating">${stars(product.rating)} (${product.rating}.0)</p>
             <p class="desc">${product.description}</p>
             <p class="price text-gradient">${product.price}</p>
-            <button class="btn btn-primary" type="button">Añadir al carrito</button>
+            <button class="btn btn-primary add-to-cart" data-product-id="${product.id}" type="button">Añadir al carrito</button>
             <ul class="features">${product.features.map((f) => `<li>${f}</li>`).join("")}</ul>
           </div>
         </div>
@@ -109,9 +124,135 @@ function detailView(id) {
 function router() {
   const hash = window.location.hash || "#/";
   const productMatch = hash.match(/^#\/producto\/(.+)$/);
+  closeMobileMenu();
   if (productMatch) return detailView(productMatch[1]);
   homeView();
 }
 
+function persistCart() {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+function getCartCount() {
+  return cart.reduce((acc, item) => acc + item.qty, 0);
+}
+
+function getCartTotal() {
+  return cart.reduce((acc, item) => acc + item.qty * item.amount, 0);
+}
+
+function updateCartCount() {
+  cartCountNode.textContent = String(getCartCount());
+}
+
+function renderCartItems() {
+  if (!cart.length) {
+    cartItemsNode.innerHTML = `<div class="cart-empty">Tu carrito está vacío.</div>`;
+    cartTotalNode.textContent = formatPrice(0);
+    updateCartCount();
+    return;
+  }
+
+  cartItemsNode.innerHTML = cart.map((item) => `
+    <article class="cart-item">
+      <img src="${item.image}" alt="${item.name}" />
+      <div>
+        <p><strong>${item.name}</strong></p>
+        <p class="muted">${item.qty} x ${formatPrice(item.amount)}</p>
+      </div>
+      <button class="icon-btn remove-from-cart" data-product-id="${item.id}" type="button" aria-label="Quitar del carrito">🗑</button>
+    </article>
+  `).join("");
+
+  cartTotalNode.textContent = formatPrice(getCartTotal());
+  updateCartCount();
+}
+
+function openCart() {
+  cartDrawer.classList.add("is-open");
+  cartDrawer.setAttribute("aria-hidden", "false");
+  cartOverlay.hidden = false;
+}
+
+function closeCart() {
+  cartDrawer.classList.remove("is-open");
+  cartDrawer.setAttribute("aria-hidden", "true");
+  cartOverlay.hidden = true;
+}
+
+function closeMobileMenu() {
+  if (!navLinks || !menuBtn) return;
+  navLinks.classList.remove("is-open");
+  menuBtn.setAttribute("aria-expanded", "false");
+}
+
+function toggleMobileMenu() {
+  if (!navLinks || !menuBtn) return;
+  const isOpen = navLinks.classList.toggle("is-open");
+  menuBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+}
+
+function addToCart(productId) {
+  const product = products.find((p) => p.id === productId);
+  if (!product) return;
+
+  const existing = cart.find((item) => item.id === product.id);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({
+      id: product.id,
+      name: product.name,
+      image: product.image,
+      qty: 1,
+      amount: toAmount(product.price)
+    });
+  }
+
+  persistCart();
+  renderCartItems();
+  openCart();
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter((item) => item.id !== productId);
+  persistCart();
+  renderCartItems();
+}
+
+function clearCart() {
+  cart = [];
+  persistCart();
+  renderCartItems();
+}
+
+app.addEventListener("click", (event) => {
+  const addBtn = event.target.closest(".add-to-cart");
+  if (addBtn) {
+    addToCart(addBtn.dataset.productId);
+    return;
+  }
+
+  const removeBtn = event.target.closest(".remove-from-cart");
+  if (removeBtn) removeFromCart(removeBtn.dataset.productId);
+});
+
+cartBtn.addEventListener("click", openCart);
+cartCloseBtn.addEventListener("click", closeCart);
+cartOverlay.addEventListener("click", closeCart);
+clearCartBtn.addEventListener("click", clearCart);
+if (menuBtn && navLinks) {
+  menuBtn.addEventListener("click", toggleMobileMenu);
+  navLinks.addEventListener("click", (event) => {
+    if (event.target.closest("a")) closeMobileMenu();
+  });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 920) closeMobileMenu();
+  });
+}
+
 window.addEventListener("hashchange", router);
-window.addEventListener("DOMContentLoaded", router);
+window.addEventListener("DOMContentLoaded", () => {
+  router();
+  renderCartItems();
+});
