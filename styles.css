@@ -191,6 +191,78 @@ a { color: inherit; text-decoration: none; }
 .not-found { min-height: 56vh; display: grid; place-items: center; text-align: center; padding-top: 72px; }
 .not-found p { color: var(--muted); }
 
+.checkout { padding: 108px 0 80px; }
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.checkout-summary,
+.checkout-form,
+.checkout-empty,
+.checkout-success {
+  padding: 18px;
+}
+.checkout-summary h2,
+.checkout-form h2 {
+  margin-top: 0;
+}
+.checkout-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.checkout-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+.checkout-item p { margin: 2px 0; }
+.checkout-item .muted { color: var(--muted); font-size: 13px; }
+.checkout-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 18px;
+}
+.checkout-form form {
+  display: grid;
+  gap: 10px;
+}
+.checkout-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.checkout-form input {
+  border: 1px solid var(--border);
+  background: rgba(15, 24, 39, 0.8);
+  color: var(--fg);
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+}
+.checkout-form input:focus {
+  border-color: var(--primary);
+}
+.form-error {
+  margin: 4px 0;
+  color: #ff8f8f;
+  font-size: 13px;
+}
+.checkout-empty,
+.checkout-success {
+  text-align: center;
+}
+.checkout-empty p,
+.checkout-success p {
+  color: var(--muted);
+}
+
 .footer { border-top: 1px solid var(--border); padding: 20px 0; }
 .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .footer p, .footer-links { color: var(--muted); font-size: 12px; }
@@ -202,7 +274,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 920px) {
-  .hero-grid, .detail-grid { grid-template-columns: 1fr; }
+  .hero-grid, .detail-grid, .checkout-grid { grid-template-columns: 1fr; }
   .menu-btn { display: inline-flex; align-items: center; justify-content: center; }
   .nav-links {
     display: none;
