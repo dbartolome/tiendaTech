@@ -18,6 +18,7 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
+
 function sendFile(filePath, res) {
   fs.readFile(filePath, (err, data) => {
     if (err) {

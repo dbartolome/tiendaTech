@@ -6,6 +6,7 @@ const products = [
   { id: "phone-quantum", name: "Phone Quantum", price: "€899", image: "./assets/product-phone.jpg", rating: 5, tag: "Premium", category: "Smartphones", description: "Smartphone de última generación con pantalla Dynamic LTPO de 6.7\", cámara de 200MP con IA avanzada, carga ultrarrápida de 120W y procesador de 4nm.", features: ["Pantalla LTPO 6.7\" 144Hz", "Cámara 200MP con IA", "Carga rápida 120W", "Procesador 4nm Octa-Core", "12GB RAM + 256GB", "Batería 5500mAh"], specs: [["Pantalla", "6.7\" LTPO AMOLED 144Hz"], ["Procesador", "4nm Octa-Core"], ["RAM / Almac.", "12GB / 256GB"], ["Cámara", "200MP + 50MP + 12MP"], ["Batería", "5500mAh - 120W"], ["OS", "Android 16"]] }
 ];
 
+
 const categories = [["Audio", 42], ["Smartphones", 28], ["Wearables", 15], ["Periféricos", 36], ["Altavoces", 19], ["Gaming", 53]];
 const app = document.getElementById("app");
 const menuBtn = document.getElementById("menuToggle");
